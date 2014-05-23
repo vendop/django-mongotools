@@ -45,9 +45,14 @@ def iter_valid_fields(meta):
         meta_exclude += (meta.document._meta.get('id_field'),)
     # walk through the document fields
 
-    for field_name, field in sorted(meta.document._fields.items(), key=lambda t: t[1].creation_counter):
+    if meta_fields:
+        fields = [(field_name, meta.document._fields[field_name]) for field_name in meta_fields]
+    else:
+        fields = sorted(meta.document._fields.items(), key=lambda t: t[1].creation_counter)
+
+    for field_name, field in fields:
         # skip excluded or not explicit included fields
-        if (meta_fields and field_name not in meta_fields) or field_name in meta_exclude:
+        if field_name in meta_exclude:
             continue
 
         if isinstance(field, EmbeddedDocumentField): #skip EmbeddedDocumentField
